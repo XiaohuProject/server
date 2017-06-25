@@ -1,0 +1,2 @@
+[web]
+120.76.102.112 ansible_ssh_user=ansible
