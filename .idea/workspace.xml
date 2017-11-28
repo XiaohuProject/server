@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d85d9c68-1450-41cd-9d6e-1a9804889537" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mideep_api/server.py" afterPath="$PROJECT_DIR$/mideep_api/server.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mideep_api/supervisor.mideep-api.conf" afterPath="$PROJECT_DIR$/mideep_api/supervisor.mideep-api.conf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mideep_api/sql.txt" afterPath="$PROJECT_DIR$/mideep_api/sql.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,8 +21,8 @@
       <file leaf-file-name="server.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mideep_api/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="729">
-              <caret line="57" column="0" lean-forward="true" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+            <state relative-caret-position="576">
+              <caret line="164" column="30" lean-forward="true" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -43,8 +43,8 @@
       <file leaf-file-name="sql.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mideep_api/sql.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state relative-caret-position="510">
+              <caret line="30" column="2" lean-forward="true" selection-start-line="30" selection-start-column="2" selection-end-line="41" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -442,14 +442,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mideep_api/sql.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mideep_api/supervisor.mideep-api.conf">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -458,10 +450,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/mideep_api/sql.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="30" column="2" lean-forward="true" selection-start-line="30" selection-start-column="2" selection-end-line="41" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mideep_api/server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="729">
-          <caret line="57" column="0" lean-forward="true" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+        <state relative-caret-position="576">
+          <caret line="164" column="30" lean-forward="true" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

@@ -49,29 +49,133 @@ def set_profile():
 
 @app.route('/bsr/profile/get')
 def get_profile():
-    user_id = request.args.get("user_id")
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    uid = request.args.get("uid")
+    with SessionWrapper() as sess:
+        profile = sess.query(BSRProfile).get(uid)
+        if not profile:
+            ret = {'code': 400, 'message': 'invalid uid'}
+            return json.dumps(ret)
+
+        ret = {
+            'code': 200,
+            'profile': {
+                'name': profile.name,
+                'cid': profile.cid,
+                'wid': profile.wid,
+                'enter_time': profile.enter_time.strftime("%Y%m%d"),
+                'gender': profile.gender
+            }
+        }
+        return json.dumps(ret)
 
 
 @app.route('/bsr/footprint/set')
 def set_footprint():
-    pass
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    uid = request.args.get("uid")
+    create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    description = request.args.get("description")
+    fp_type = request.args.get("type")
+    duration = request.args.get("duration")
+
+    with SessionWrapper() as sess:
+        footprint = BSRFootprint(uid=uid, description=description, type=fp_type, duration=duration,
+                                 create_time=create_time.strftime("%Y-%m-%d %H:%M:%S"))
+        sess.add(footprint)
+        sess.commit()
+        sess.flush()
+        ret = {'code': 200}
+        return json.dumps(ret)
 
 
 @app.route('/bsr/footprint/get')
 def get_footprint():
-    user_id = request.args.get("user_id")
-    pass
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    uid = request.args.get("uid")
+    with SessionWrapper() as sess:
+        footprints = sess.query(BSRFootprint).filter_by(uid=uid)
+
+        ret_footprints = []
+        for footprint in footprints:
+            ret_footprints.append({
+                'create_time': footprint.create_time.strftime("%Y%m%d"),
+                'description': footprint.description,
+                'type': footprint.type,
+                'duration': footprint.duration
+            })
+
+        ret = {
+            'code': 200,
+            'footprints': ret_footprints
+        }
+        return json.dumps(ret)
 
 
 @app.route('/bsr/exam/set')
 def set_exam():
-    pass
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    uid = request.args.get("uid")
+    create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    type_a = request.args.get("type_a")
+    type_b = request.args.get("type_b")
+    number = request.args.get("number")
+    result = request.args.get("result")
+    mister = request.args.get("mister")
+
+    with SessionWrapper() as sess:
+        exam = BSRExam(uid=uid, type_a=type_a, type_b=type_b, number=number, result=result, mister=mister,
+                       create_time=create_time.strftime("%Y-%m-%d %H:%M:%S"))
+        sess.add(exam)
+        sess.commit()
+        sess.flush()
+        ret = {'code': 200}
+        return json.dumps(ret)
 
 
 @app.route('/bsr/exam/get')
 def get_exam():
-    user_id = request.args.get("user_id")
-    pass
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    uid = request.args.get("uid")
+    with SessionWrapper() as sess:
+        exams = sess.query(BSRExam).filter_by(uid=uid)
+
+        ret_exams = []
+        for exam in exams:
+            ret_exams.append({
+                'create_time': exam.create_time.strftime("%Y%m%d"),
+                'type_a': exam.type_a,
+                'type_b': exam.type_b,
+                'number': exam.number,
+                'result': exam.result,
+                'mister': exam.mister
+            })
+
+        ret = {
+            'code': 200,
+            'exams': ret_exams
+        }
+        return json.dumps(ret)
 
 
 class BSRProfile(Base):
@@ -83,6 +187,30 @@ class BSRProfile(Base):
     wid = Column(String)
     enter_time = Column(DateTime)
     gender = Column(String)
+
+
+class BSRFootprint(Base):
+    __tablename__ = 'footprint'
+
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer)
+    create_time = Column(DateTime)
+    description = Column(String)
+    type = Column(String)
+    duration = Column(String)
+
+
+class BSRExam(Base):
+    __tablename__ = 'exam'
+
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer)
+    create_time = Column(DateTime)
+    type_a = Column(String)
+    type_b = Column(String)
+    number = Column(Integer)
+    result = Column(String)
+    mister = Column(String)
 
 
 class SessionWrapper:
