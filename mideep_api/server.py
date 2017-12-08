@@ -22,21 +22,22 @@ def hello():
     return "user {} is visited, return random id: {}".format(user, uuid.uuid1())
 
 
-@app.route('/bsr/profile/set')
-def set_profile():
+@app.route('/bsr/profile/add')
+def add_profile():
     ak = request.args.get("ak")
     if ak != api_key:
         ret = {'code': 401, 'message': 'invalid api key'}
         return json.dumps(ret)
 
     name = request.args.get("name")
-    cid = request.args.get("cid")
-    wid = request.args.get("wid")  # 呼号
-    enter_time = datetime.strptime(request.args.get("enter_time"), "%Y%m%d")
-    gender = request.args.get("gender")
+    openid = request.args.get("openid", "")
+    icon = request.args.get("icon", "")
+    wid = request.args.get("wid", "")  # 呼号
+    create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    gender = request.args.get("gender", "")
 
     with SessionWrapper() as sess:
-        profile = BSRProfile(cid=cid, wid=wid, enter_time=enter_time.strftime("%Y-%m-%d %H:%M:%S"),
+        profile = BSRProfile(openid=openid, wid=wid, icon=icon, create_time=create_time.strftime("%Y-%m-%d %H:%M:%S"),
                              gender=gender, name=name)
         sess.add(profile)
         sess.commit()
@@ -45,6 +46,81 @@ def set_profile():
 
     ret = {'code': 200, 'uid': uid}
     return json.dumps(ret)
+
+
+@app.route('/bsr/profile/update')
+def update_profile():
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    uid = request.args.get("uid")
+    openid = request.args.get("openid", None)
+    name = request.args.get("name", None)
+    icon = request.args.get("icon", None)
+    wid = request.args.get("wid", None)  # 呼号
+    create_time = request.args.get("create_time", None)
+    gender = request.args.get("gender", None)
+
+    with SessionWrapper() as sess:
+        profile = sess.query(BSRProfile).get(uid)
+        if profile is None:
+            ret = {'code': 401, 'message': 'invalid uid'}
+            return json.dumps(ret)
+
+        if openid:
+            profile.openid = openid
+        if name:
+            profile.name = name
+        if icon:
+            profile.icon = icon
+        if wid:
+            profile.wid = wid
+        if create_time:
+            create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+            profile.create_time = create_time
+        if gender:
+            profile.gender = gender
+        sess.commit()
+        sess.flush()
+
+    ret = {'code': 200}
+    return json.dumps(ret)
+
+
+@app.route("/bsr/profile/openid/uid")
+def get_uid_by_openid():
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    openid = request.args.get("openid")
+    with SessionWrapper() as sess:
+        profile = sess.query(BSRProfile).filter_by(openid=openid).first()
+        uid = -1
+        if profile is not None:
+            uid = profile.uid
+        ret = {'code': 200, 'uid': uid}
+        return json.dumps(ret)
+
+
+@app.route("/bsr/profile/name/uid")
+def get_uid_by_name():
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    name = request.args.get("name")
+    with SessionWrapper() as sess:
+        profile = sess.query(BSRProfile).filter_by(name=name).first()
+        uid = -1
+        if profile is not None:
+            uid = profile.uid
+        ret = {'code': 200, 'uid': uid}
+        return json.dumps(ret)
 
 
 @app.route('/bsr/profile/get')
@@ -65,11 +141,40 @@ def get_profile():
             'code': 200,
             'profile': {
                 'name': profile.name,
-                'cid': profile.cid,
+                'openid': profile.openid,
+                'icon': profile.icon,
                 'wid': profile.wid,
-                'enter_time': profile.enter_time.strftime("%Y%m%d"),
+                'create_time': profile.create_time.strftime("%Y%m%d"),
                 'gender': profile.gender
             }
+        }
+        return json.dumps(ret)
+
+
+@app.route('/bsr/profiles/get')
+def get_profiles():
+    ak = request.args.get("ak")
+    if ak != api_key:
+        ret = {'code': 401, 'message': 'invalid api key'}
+        return json.dumps(ret)
+
+    with SessionWrapper() as sess:
+        profiles = sess.query(BSRProfile).all()
+
+        ret_profiles = []
+        for profile in profiles:
+            ret_profiles.append({
+                'name': profile.name,
+                'openid': profile.openid,
+                'icon': profile.icon,
+                'wid': profile.wid,
+                'create_time': profile.create_time.strftime("%Y%m%d"),
+                'gender': profile.gender
+            })
+
+        ret = {
+            'code': 200,
+            'profiles': ret_profiles
         }
         return json.dumps(ret)
 
@@ -182,10 +287,11 @@ class BSRProfile(Base):
     __tablename__ = 'profile'
 
     uid = Column(Integer, primary_key=True)
+    openid = Column(String)
     name = Column(String)
-    cid = Column(String)
+    icon = Column(String)
     wid = Column(String)
-    enter_time = Column(DateTime)
+    create_time = Column(DateTime)
     gender = Column(String)
 
 

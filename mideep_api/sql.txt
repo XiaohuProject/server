@@ -6,11 +6,12 @@ $ create database if not exists bsr default charset utf8 collate utf8_general_ci
 $ create table profile
 (
      uid int not null auto_increment,
+     openid varchar(100),
      name varchar(100) not null,
-     cid varchar(100) not null,
-     wid varchar(100) not null,
-     enter_time datetime not null,
-     gender varchar(8) not null,
+     icon varchar(100),
+     wid varchar(100),
+     create_time datetime,
+     gender varchar(8),
      primary key(uid)
 )default charset=utf8;
 
