@@ -164,6 +164,7 @@ def get_profiles():
         ret_profiles = []
         for profile in profiles:
             ret_profiles.append({
+                'uid': profile.uid,
                 'name': profile.name,
                 'openid': profile.openid,
                 'icon': profile.icon,
