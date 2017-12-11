@@ -36,6 +36,7 @@ def add_profile():
     wid = request.args.get("wid", "")  # 呼号
     # create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
     create_time = time.ctime(float(request.args.get("create_time")) / 1000)
+    create_time = datetime.strptime(create_time, "%a %b %d %H:%M:%S %Y")
     gender = request.args.get("gender", "")
 
     with SessionWrapper() as sess:
