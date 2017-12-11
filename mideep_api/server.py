@@ -1,6 +1,7 @@
 import json
 import uuid
 from datetime import datetime
+import time
 
 from flask import Flask, request
 from sqlalchemy import Column
@@ -33,7 +34,8 @@ def add_profile():
     openid = request.args.get("openid", "")
     icon = request.args.get("icon", "")
     wid = request.args.get("wid", "")  # 呼号
-    create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    # create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    create_time = time.ctime(float(request.args.get("create_time")) / 1000)
     gender = request.args.get("gender", "")
 
     with SessionWrapper() as sess:
@@ -78,8 +80,10 @@ def update_profile():
         if wid:
             profile.wid = wid
         if create_time:
-            create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
-            profile.create_time = create_time
+            # create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+            create_time = time.ctime(float(request.args.get("create_time")) / 1000)
+            create_time = datetime.strptime(create_time, "%a %b %d %H:%M:%S %Y")
+            profile.create_time = create_time.strftime("%Y-%m-%d %H:%M:%S")
         if gender:
             profile.gender = gender
         sess.commit()
@@ -137,6 +141,8 @@ def get_profile():
             ret = {'code': 400, 'message': 'invalid uid'}
             return json.dumps(ret)
 
+        # create_time = profile.create_time.strftime("%Y%m%d")
+        create_time = time.mktime(profile.create_time.timetuple()) * 1000
         ret = {
             'code': 200,
             'profile': {
@@ -144,7 +150,7 @@ def get_profile():
                 'openid': profile.openid,
                 'icon': profile.icon,
                 'wid': profile.wid,
-                'create_time': profile.create_time.strftime("%Y%m%d"),
+                'create_time': create_time,
                 'gender': profile.gender
             }
         }
@@ -163,13 +169,16 @@ def get_profiles():
 
         ret_profiles = []
         for profile in profiles:
+            # create_time = profile.create_time.strftime("%Y%m%d")
+            create_time = time.mktime(profile.create_time.timetuple()) * 1000
+
             ret_profiles.append({
                 'uid': profile.uid,
                 'name': profile.name,
                 'openid': profile.openid,
                 'icon': profile.icon,
                 'wid': profile.wid,
-                'create_time': profile.create_time.strftime("%Y%m%d"),
+                'create_time': create_time,
                 'gender': profile.gender
             })
 
@@ -188,7 +197,9 @@ def set_footprint():
         return json.dumps(ret)
 
     uid = request.args.get("uid")
-    create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    # create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    create_time = time.ctime(float(request.args.get("create_time")) / 1000)
+    create_time = datetime.strptime(create_time, "%a %b %d %H:%M:%S %Y")
     description = request.args.get("description")
     fp_type = request.args.get("type")
     duration = request.args.get("duration")
@@ -216,8 +227,11 @@ def get_footprint():
 
         ret_footprints = []
         for footprint in footprints:
+            # create_time = footprint.create_time.strftime("%Y%m%d")
+            create_time = time.mktime(footprint.create_time.timetuple()) * 1000
+
             ret_footprints.append({
-                'create_time': footprint.create_time.strftime("%Y%m%d"),
+                'create_time': create_time,
                 'description': footprint.description,
                 'type': footprint.type,
                 'duration': footprint.duration
@@ -238,7 +252,9 @@ def set_exam():
         return json.dumps(ret)
 
     uid = request.args.get("uid")
-    create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    # create_time = datetime.strptime(request.args.get("create_time"), "%Y%m%d")
+    create_time = time.ctime(float(request.args.get("create_time")) / 1000)
+    create_time = datetime.strptime(create_time, "%a %b %d %H:%M:%S %Y")
     type_a = request.args.get("type_a")
     type_b = request.args.get("type_b")
     number = request.args.get("number")
@@ -268,8 +284,10 @@ def get_exam():
 
         ret_exams = []
         for exam in exams:
+            # create_time = exam.create_time.strftime("%Y%m%d")
+            create_time = time.mktime(exam.create_time.timetuple()) * 1000
             ret_exams.append({
-                'create_time': exam.create_time.strftime("%Y%m%d"),
+                'create_time': create_time,
                 'type_a': exam.type_a,
                 'type_b': exam.type_b,
                 'number': exam.number,
